@@ -13,4 +13,11 @@ define("REQUEST_TYPE_SIGNUP_REQUEST", 5);
 define("REQUEST_TYPE_LOGIN_REQUEST", 6);
 define("REQUEST_TYPE_FORGOT_PASSWORD_REQUEST", 7);
 
+/**********************************Deal Types**************************************/
+
+define("DEAL_TYPE_X_UNITS_Y_UNITS", 1);
+define("DEAL_TYPE_X_UNITS_Y_PERCENT", 2);
+define("DEAL_TYPE_AMOUNT_X_UNITS_Y_AMOUNT", 3);
+define("DEAL_TYPE_AMOUNT_X_UNITS_Y_PERCENT", 4);
+
 ?>

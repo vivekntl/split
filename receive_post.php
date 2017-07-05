@@ -7,7 +7,8 @@
 /**************************Include necessary files ***********************************/
 
 include('constants.php');
-include('db_connect.php');
+//include('db_connect.php');
+include('new_matchup.php');
 
 $request_type = $_POST['request_type'];
 echo $request_type;
@@ -17,8 +18,8 @@ switch($request_type) {
     case REQUEST_TYPE_NEW_MATCH_REQUEST:
     	  $user_id = $_POST['user_id']; 	
     	  $deal_id = $_POST['deal_id']; 	
-    	  $user_contribution = $_POST[user_contribution]; 	
-    	  handle_new_match_request($user_id, $deal_id, $user_contribution);
+    	  $user_contribution = $_POST['user_contribution']; 	
+    	  handle_new_matchup_request($user_id, $deal_id, $user_contribution);
         break;
 
     case REQUEST_TYPE_CANCEL_PREV_REQUEST:
@@ -35,6 +36,7 @@ switch($request_type) {
         break;
         
 }
+
+//include('db_close');
  
-include('db_close.php');   
 ?>
