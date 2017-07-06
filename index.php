@@ -1,5 +1,6 @@
 <?php
 
+trigger_error("Index Loaded", E_USER_NOTICE);
 
 ?>
 <form action="receive_post.php" method="post">
