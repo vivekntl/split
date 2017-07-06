@@ -24,7 +24,7 @@ function check_for_match($user_contribution, $prev_interests, $deal_id) {
 	global $conn;
 	$matched_user_id = 0;
 	
-	$sql = "SELECT X1, Y1, X2, Y2, X3, Y3, deal_type FROM deals where deal_id = " . $deal_id;
+	$sql = "SELECT X1, Y1, X2, Y2, X3, Y3, type_id FROM deals where deal_id = " . $deal_id;
 	
 	$result = $conn->query($sql);
 	
@@ -53,7 +53,7 @@ function check_for_match($user_contribution, $prev_interests, $deal_id) {
 	
 	$interestArray = explode(";", $interests1);
 	foreach ($interestArray as  $interest) {
-		echo "<br>" . $interest;		
+		echo "<br>" . $interest;  		
 		$temp = explode(",", $interest);
 		array_push($userArray, $temp[0]);	
 		array_push($userInterestArray, $temp[1]);	
@@ -61,50 +61,59 @@ function check_for_match($user_contribution, $prev_interests, $deal_id) {
 	
 	switch($dealType) {
 		case DEAL_TYPE_X_UNITS_Y_UNITS:
-			for($YIndex = 0; $YIndex < count($Y_array); $YIndex++) {
-				for($interestIndex=0; $interestIndex < count($userInterestArray); $interestIndex++) {
-					if($userInterestArray[$interestIndex] + $user_contribution >= $Y_array[$YIndex]) {
-						$matched_user_id = $userArray[$interestIndex];
-						echo "<br>" . "Found match " . $matched_user_id;
-						break 2;
-					}
-				}
+            for($interestIndex=0; $interestIndex < count($userInterestArray); $interestIndex++) {
+                if($userInterestArray[$interestIndex] + $user_contribution >= $Y_array[0] ||
+                   $userInterestArray[$interestIndex] + $user_contribution >= $Y_array[1] ||
+                   $userInterestArray[$interestIndex] + $user_contribution >= $Y_array[2]) {
+                    
+                    $matched_user_id = $userArray[$interestIndex];
+                    echo "<br>" . "Found match " . $matched_user_id;
+                    break 2;
+                }
 			}
+            
+            for($i = 0; $i < count($userArray) - 1; $i++) {
+                for($j=$i+1; $j<count($userArray); $j++) {
+                    if($userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[0] ||
+                       $userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[1] ||
+                       $userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[2]) {
+                
+                        $matched_user_id = $userArray[$i] . "," . $userArray[$j];
+                        echo "<br>" . "Found match " . $matched_user_id;
+                        break 2;
+                    }                                
+                }
+            }
 		break;
 		case DEAL_TYPE_X_UNITS_Y_PERCENT:
-			for($XIndex = 0; $XIndex < count($X_array); $XIndex++) {
-				for($interestIndex=0; $interestIndex < count($userInterestArray); $interestIndex++) {
-					if($userInterestArray[$interestIndex] + $user_contribution >= $X_array[$XIndex]) {
-						$matched_user_id = $userArray[$interestIndex];
-						echo "<br>" . "Found match " . $matched_user_id;
-						break 2;
-					}
-				}
-			}			
-		break;	
 		case DEAL_TYPE_X_AMOUNT_Y_AMOUNT:
-			for($XIndex < count($X_array) - 1; $XIndex >= 0;  $XIndex--) {
-				for($interestIndex=0; $interestIndex < count($userInterestArray); $interestIndex++) {
-					if($userInterestArray[$interestIndex] + $user_contribution >= $X_array[$XIndex]) {
-						$matched_user_id = $userArray[$interestIndex];
-						echo "<br>" . "Found match " . $matched_user_id;
-						break 2;
-					}
-				}
-			}			
-		break;
 		case DEAL_TYPE_X_AMOUNT_Y_PERCENT:
-			for($XIndex < count($X_array) - 1; $XIndex >= 0;  $XIndex--) {
 				for($interestIndex=0; $interestIndex < count($userInterestArray); $interestIndex++) {
-					if($userInterestArray[$interestIndex] + $user_contribution >= $X_array[$XIndex]) {
+					if($userInterestArray[$interestIndex] + $user_contribution >= $X_array[0] ||
+                       $userInterestArray[$interestIndex] + $user_contribution >= $X_array[1] ||
+                       $userInterestArray[$interestIndex] + $user_contribution >= $X_array[2]) {
 						$matched_user_id = $userArray[$interestIndex];
 						echo "<br>" . "Found match " . $matched_user_id;
 						break 2;
 					}
-				}
-			}			
-		break;
+			}
+            
+            for($i = 0; $i < count($userArray) - 1; $i++) {
+                for($j=$i+1; $j<count($userArray); $j++) {
+                    if($userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[0] ||
+                       $userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[1] ||
+                       $userInterestArray[$i] + $userInterestArray[$j] + $user_contribution >= $Y_array[2]) {
+                
+                        $matched_user_id = $userArray[$i] . "," . $userArray[$j];
+                        echo "<br>" . "Found match " . $matched_user_id;
+                        break 2;
+                    }                                
+                }
+            }
+		break;	
 	}
+    
+
 	return $matched_user_id;
 }
  
@@ -127,7 +136,24 @@ function handle_new_matchup_request($user_id, $deal_id, $user_contribution) {
 			$prev_interests  = $row['interests'];
     
     		$matched_user_id = check_for_match($user_contribution, $prev_interests, $deal_id);
+            
+            if($matched_user_id == 0) {
+                $new_interest = "{" . $user_id . "," . $user_contribution . "}";
+                $interests = "'" . $prev_interests . ";" . $new_interest . "'";
+                echo $interests;
 
+                $sql = "UPDATE working_matches set interests=" . $interests . " WHERE deal_id = " . $deal_id;
+
+                if ($conn->query($sql) === TRUE) {
+                    echo "Record updated successfully";
+                } else {
+                    echo "Error: " . $sql . "<br>" . $conn->error;
+                }
+
+            }
+            else {
+                echo "<br>Found match with " . $matched_user_id;
+            }
       	//echo "Interests: " . $row["interests"] . "<br>";
 /*    		$new_interest = "{" . $user_id . "," . $user_contribution . "}";
     		$interests = "'" . $prev_interests . ";" . $new_interest . "'";
