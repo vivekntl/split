@@ -20,4 +20,10 @@ define("DEAL_TYPE_X_UNITS_Y_PERCENT", 2);
 define("DEAL_TYPE_X_AMOUNT_Y_AMOUNT", 3);
 define("DEAL_TYPE_X_AMOUNT_Y_PERCENT", 4);
 
+/****************************MATCHED STATUS****************************************/
+
+define("MATCH_STATUS_MATCHED", 1);
+define("MATCH_STATUS_UNMATCHED", 0);
+define("MATCH_STATUS_BILLED", 2);
+
 ?>
