@@ -7,8 +7,10 @@
 /**************************Include necessary files ***********************************/
 
 include('constants.php');
+include('query_APIs.php');
 //include('db_connect.php');
 include('new_matchup.php');
+include('modify_prev.php');
 
 $request_type = $_POST['request_type'];
 echo $request_type;
@@ -26,6 +28,10 @@ switch($request_type) {
         break;
     
     case REQUEST_TYPE_MODIFY_PREV_RQUEST:
+    	  $user_id = $_POST['user_id']; 	
+    	  $deal_id = $_POST['deal_id']; 	
+    	  $user_contribution = $_POST['user_contribution']; 	
+    	  modify_prev_request($user_id, $deal_id, $user_contribution);    
         break;
 
     case REQUEST_TYPE_UPDATE_PROFILE_REQUEST:

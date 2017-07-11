@@ -4,74 +4,15 @@
 /* request.                                                                        */
 /***********************************************************************************/
 
-function INSERT_WORKING_MATCHES($dealId, $interests) {
-	
-	global $conn;
-
-	$sql = "INSERT INTO working_matches (deal_id, interests) VALUES (" . $dealId . "," . $interests . ")";
-	    								//trigger_error( $sql;
-	if ($conn->query($sql) === TRUE) {
-		trigger_error( "Inserted into WORKING MATCHES (" . $dealId . "," . $interests . ") created successfully");
-	} else {
-		trigger_error( "Error: " . $sql . " " . $conn->error, E_USER_ERROR);
-	}
-	
-}
-
-
-function INSERT_USER_PENDING_MATCHES ($dealId, $userId, $userContribution, $matchStatus, $noOfUsersMatched, $userId1, $userId2) {
-	
-	global $conn;
-	
-	if($noOfUsersMatched == 0) {
-		$sql = "INSERT INTO  user_pending_matches (deal_id, user_id, X, match_status) VALUES (" . $dealId . "," . $userId . "," . $userContribution . "," .  "'UNMATCHED'" . ")";
-        $msg = "(" . dealId . "," . $userId . "," . $userContribution . "," .  "'UNMATCHED'" . ")";
-	} else if($noOfUsersMatched == 1) {
-		$sql = "INSERT INTO  user_pending_matches (deal_id, user_id, X, no_of_matchers, match_status, user_id1) VALUES (" . $dealId . "," . $userId . "," . $userContribution . "," . 1 .  "," .  "'MATCHED'," . $userId1 .  ")";
-        $msg = "(" . $dealId . "," . $userId . "," . $userContribution . "," . 1 .  "," .  "'MATCHED'," . $userId1 .  ")";
-	} else if($noOfUsersMatched == 2) {
-		$sql = "INSERT INTO  user_pending_matches (deal_id, user_id, X, no_of_matchers, match_status, user_id1, user_id2) VALUES (" . $dealId . "," . $userId . "," . $userContribution . "," . 2 .  "," .  "'MATCHED'," . $userId1 . "," . $userId2 . ")";
-        $msg = "(" . $dealId . "," . $userId . "," . $userContribution . "," . 2 .  "," .  "'MATCHED'," . $userId1 . "," . $userId2 . ")";
-	}
-	echo($sql);
-	if ($conn->query($sql) === TRUE) {
- 			trigger_error( "Intested into USER_PENDING_MATHUPS " . $msg ." successfully");
-	} else {
-		trigger_error( "Error: " . $sql . " " . $conn->error);
-	}	
- 	
-}
-
-function UPDATE_USER_PENDING_MATCHES($noOfUsersMatched, $matchStatus, $dealId, $userId, $userId1, $userId2) {
-    
-    global $conn;
-
-	if($noOfUsersMatched == 1) {
-        $sql = "UPDATE user_pending_matches set no_of_matchers =" . $noOfUsersMatched . ",match_status = " . $matchStatus . ",user_id1 = " . $userId1 . " WHERE user_id = " . $userId . " AND deal_id = " . $dealId ;
-        $msg = "(" . $noOfUsersMatched . "match_status = " . $matchStatus . "user_id1 = " . $userId1 . ") for (" .  $userId . "," . $dealId . ")";
-    }
-	else if($noOfUsersMatched == 2) {
-        $sql = "UPDATE user_pending_matches set no_of_matchers =" . $noOfUsersMatched . ",match_status = " . $matchStatus . ",user_id1 = " . $userId1 . ",user_id2 = " . $userId2 . " WHERE user_id = " . $userId . " AND deal_id = " . $dealId ;
-        $msg = "(" . $noOfUsersMatched . ",match_status = " . $matchStatus . ",user_id1 = " . $userId1 . ",user_id2 = " . $userId2 . ") for (" .  $userId . "," . $dealId . ")";
-    }    
-    trigger_error ($sql);
-    if ($conn->query($sql) === TRUE) {
-        trigger_error( "Updated USER_PENDING_MATCHES with " . $msg ."successfully");
-    } else {
-        trigger_error( "Error: " . $sql . " " . $conn->error);
-    }	
- }
-
-
 function process_first_interest_for_deal($userId, $dealId, $userContribution, $matchStatus) {
 	
 	$interests = "'{" . $userId . "," . $userContribution . "}'";
 	
 	INSERT_WORKING_MATCHES($dealId, $interests);
 	
-	INSERT_USER_PENDING_MATCHES($dealId, $userId, $userContribution, $matchStatus, 0, NULL, NULL);
+	INSERT_USER_PENDING_MATCHES($dealId, $userId, 0, $userContribution, $matchStatus, 0, NULL, NULL);
 
-}  
+}
 
 function check_for_match($userContribution, $userArray, $userInterestArray, $dealId) {
 
@@ -203,14 +144,9 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
                 $interests = "'" . $prevInterests . ";" . $newInterest . "'";
                 trigger_error( $interests);
 
-                $sql = "UPDATE working_matches set interests=" . $interests . " WHERE deal_id = " . $dealId;
+                UPDATE_WORKING_MATCHES($dealId, $interests);
 
-                if ($conn->query($sql) === TRUE) {
-                    trigger_error( "Record updated successfully");
-                } else {
-                    trigger_error( "Error: " . $sql . " " . $conn->error, E_USER_ERROR);
-                }
-                INSERT_USER_PENDING_MATCHES($dealId, $userId, $userContribution, 'UNMATCHED', 0	, NULL, NULL);                           
+                INSERT_USER_PENDING_MATCHES($dealId, $userId, 0, $userContribution, 'UNMATCHED', 0	, NULL, NULL);                           
 
             } else {
          		 $matchStatus = MATCH_STATUS_MATCHED;
@@ -221,15 +157,9 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
               
                 if($noOfUsersMatched == $prevCount) {
                 	//delete working matches row
-                	 $sql = "DELETE FROM working_matches WHERE deal_id = " . $dealId;
-	                if ($conn->query($sql) === TRUE) {
-	                    trigger_error( "Row deleted from  working matches successfully");
-	                } else {
-	                    trigger_error( "Error: " . $sql . " " . $conn->error, E_USER_ERROR);
-	                }
+                	DELETE_WORKING_MATCHES($dealId);
+
                 } else {
-						 // modify working matches row
-	                //$new_interest = "{" . $userId . "," . $userContribution . "}";
 													
 						 $flagAdd = 1;
 						 $interests = "";
@@ -247,70 +177,39 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
 						 	}
 						 	$flagAdd = 1;        
 	                }
-                //var_dump($userArray);
+ 
 	                trigger_error($interests . " " . strlen($interests));
 	                $interests = rtrim($interests, ";");
 	                $interests = "'" . $interests . "'"; 
 	                trigger_error($interests . " " . strlen($interests));
                 
-                	$sql = "UPDATE working_matches set interests = " . $interests . "WHERE deal_id = " . $dealId;
-						if ($conn->query($sql) === TRUE) {
-							trigger_error( "Updated working_matches successfully");
-						} else {
-							trigger_error( "Error: " . $sql . " " . $conn->error);
-						}
-						echo $sql;
+						UPDATE_WORKING_MATCHES($dealId, $interests);
 					 }
 					 $alpha   = str_shuffle('0123456789');
 					 $code = substr($alpha, 0, 4);
-					 $prevId = $conn->insert_id;
-					 //$prevId = 567;
+
+					 echo "<br>No ofuser matched" . $noOfUsersMatched . "<br>";
 					 if($noOfUsersMatched == 1) {
-					 	$sql = "INSERT INTO success_matchups (match_id, deal_id, code, num_matches, user1_id, user2_id, matchup_status) VALUES (" . $prevId .  "," . $dealId .  "," . "'" . $code . "'" . "," . "2" . "," . $usersMatched[0] .  "," . $userId . "," . "'MATCHED'" . ")"; 						
+					 	$prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], NULL, 'MATCHED');					
 					 } else {
-					 	$sql = "INSERT INTO success_matchups (match_id, deal_id, code, num_matches, user1_id, user2_id, user3_id, matchup_status) VALUES (" . $prevId .  "," . $dealId .  "," . "'" .  $code. "'" . "," . "3" . "," . $usersMatched[0] .  "," . $usersMatched[1] . "," .  $userId . "," . "'MATCHED'" .")"; 						
+					 	$prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], $usersMatched[1], 'MATCHED');	
 					 }
-					 echo ($sql);
-					 trigger_error($sql);
-              	 	 if ($conn->query($sql) === TRUE) {
-				 		trigger_error( "Intested into success matchup successfully");
-				      } else {
-						trigger_error( "Error: " . $sql . " " . $conn->error);
-					  }
-
-
+					 
 					if($noOfUsersMatched == 1) {
-                        UPDATE_USER_PENDING_MATCHES($noOfUsersMatched, 'MATCHED', $dealId, $userId, $usersMatched[0], NULL);
-						/*$sql = "UPDATE user_pending_matches set no_of_matchers = " . 1 . ", match_status = " . "'MATCHED'" . ", user_id1 = "  . $userId . " WHERE user_id = " . $usersMatched[0] . " AND deal_id = " . $dealId ;
-						echo ($sql); 
-					   if ($conn->query($sql) === TRUE) {
-				 			trigger_error( "Updated user_pending_matches  successfully");
-				   	} else {
-							trigger_error( "Error: " . $sql . " " . $conn->error);
-						}*/
-  
-                        INSERT_USER_PENDING_MATCHES($dealId, $userId, $userContribution, 'MATCHED', $noOfUsersMatched, $usersMatched[0], NULL);
+
+               	UPDATE_USER_PENDING_MATCHES($prevId, $noOfUsersMatched, 'MATCHED', $dealId, $usersMatched[0], $userId, NULL);
+                  INSERT_USER_PENDING_MATCHES($dealId, $userId, $prevId, $userContribution, 'MATCHED', $noOfUsersMatched, $usersMatched[0], NULL);
 
 					} else {
 						
-					
 						for($i=0; $i<$noOfUsersMatched; $i++) {
 
-                            UPDATE_USER_PENDING_MATCHES($noOfUsersMatched, 'MATCHED', $dealId, $userId, $usersMathed[0], $usersMathed[1]);
-							/*$sql = "UPDATE user_pending_matches set no_of_matchers = 2, match_status = 'MATCHED', user_id1 =" . $usersMatched[1-$i] . ", user_id2 = " . $userId . " WHERE user_id = " . $usersMatched[$i] . " AND deal_id = " . $dealId ;
-							trigger_error ($sql);
-							if ($conn->query($sql) === TRUE) {
-					 			trigger_error( "Updated user_pending_matches successfully");
-							} else {
-								trigger_error( "Error: " . $sql . " " . $conn->error);
-							}*/	
-		
+                  	UPDATE_USER_PENDING_MATCHES($prevId, $noOfUsersMatched, 'MATCHED', $dealId, $usersMatched[$i], $userId, $usersMatched[1-$i]);
 						}
-	                   INSERT_USER_PENDING_MATCHES($dealId, $userId, $userContribution, 'MATCHED', $noOfUsersMatched, $usersMatched[0], $usersMatched[1]);
+	               INSERT_USER_PENDING_MATCHES($dealId, $userId, $prevId, $userContribution, 'MATCHED', $noOfUsersMatched, $usersMatched[0], $usersMatched[1]);
 
-					}	
-     	 
-           }     
+				}	
+       	}     
       	
 		} else {
 		
