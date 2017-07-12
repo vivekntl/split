@@ -76,6 +76,7 @@ function check_for_match($userContribution, $userArray, $userInterestArray, $dea
                     if($userInterestArray[$interestIndex] + $userContribution >= $X_array[0] ||
                        $userInterestArray[$interestIndex] + $userContribution >= $X_array[1] ||
                        $userInterestArray[$interestIndex] + $userContribution >= $X_array[2]) {
+                        
                         $matched_userId = $userArray[$interestIndex];
                         trigger_error( "Found match " . $matched_userId);
                         break 2;

@@ -11,6 +11,7 @@ include('query_APIs.php');
 include('db_connect.php');
 include('new_matchup.php');
 include('modify_prev.php');
+include('delete_prev.php');
 
 $request_type = $_POST['request_type'];
 echo $request_type;
@@ -25,7 +26,10 @@ switch($request_type) {
         break;
 
     case REQUEST_TYPE_CANCEL_PREV_REQUEST:
-        break;
+     	  $user_id = $_POST['user_id']; 	
+    	  $deal_id = $_POST['deal_id']; 	
+    	  delete_prev_request($user_id, $deal_id);  
+    	  break;
     
     case REQUEST_TYPE_MODIFY_PREV_RQUEST:
     	  $user_id = $_POST['user_id']; 	

@@ -4,7 +4,7 @@
 /* request.                                                                        */
 /***********************************************************************************/
  
-function modify_prev_request($userId, $dealId, $userContribution) {
+function delete_prev_request($userId, $dealId) {
 	
     global $conn;	
 
@@ -33,6 +33,7 @@ function modify_prev_request($userId, $dealId, $userContribution) {
         array_push($userArray, $temp[0]);	
         array_push($userInterestArray, $temp[1]);	
     }
+    
     $newInterests = "";
     for ($i = 0; $i < count($userArray); $i++) {
         if($userArray[$i] != $userId) {
@@ -50,8 +51,6 @@ function modify_prev_request($userId, $dealId, $userContribution) {
         UPDATE_WORKING_MATCHES($dealId, $newInterests);        
     }
     DELETE_USER_PENDING_MATCHES($userId, $dealId);
-
-    handle_new_matchup_request($userId, $dealId, $userContribution);
 	   		   
 }
 

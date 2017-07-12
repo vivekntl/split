@@ -1,5 +1,7 @@
 <?php
 
+/************************WORKING_MATCHES QUERIES*************************/
+
 function INSERT_WORKING_MATCHES($dealId, $interests) {
 	
 	global $conn;
@@ -14,7 +16,19 @@ function INSERT_WORKING_MATCHES($dealId, $interests) {
 	
 }
 
+function DELETE_WORKING_MATCHES($dealId) {
+		
+	 global $conn;
+	 
+	 $sql = "DELETE FROM working_matches WHERE deal_id = " . $dealId;
+    if ($conn->query($sql) === TRUE) {
+        trigger_error( "Deleted from  WORKING_MATCHES successfully");
+    } else {
+        trigger_error( "Error: " . $sql . " " . $conn->error, E_USER_ERROR);
+    }
+}
 function UPDATE_WORKING_MATCHES($dealId, $interests) {
+
 		
     global $conn;
     
@@ -27,17 +41,20 @@ function UPDATE_WORKING_MATCHES($dealId, $interests) {
     }
 }
 
-function DELETE_WORKING_MATCHES($dealId) {
-		
-	 global $conn;
-	 
-	 $sql = "DELETE FROM working_matches WHERE deal_id = " . $dealId;
-    if ($conn->query($sql) === TRUE) {
-        trigger_error( "Deleted from  WORKING_MATCHES successfully");
-    } else {
-        trigger_error( "Error: " . $sql . " " . $conn->error, E_USER_ERROR);
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+/***********************USER_PENDING__MATCHES QUERIES***************************/
+
 
 function INSERT_USER_PENDING_MATCHES ($dealId, $userId, $matchId, $userContribution, $matchStatus, $noOfUsersMatched, $userId1, $userId2) {
 	
@@ -62,6 +79,21 @@ function INSERT_USER_PENDING_MATCHES ($dealId, $userId, $matchId, $userContribut
  	
 }
 
+function DELETE_USER_PENDING_MATCHES($userId, $dealId) { 
+	
+	 global $conn;
+	 
+	 
+	 $sql = "DELETE FROM user_pending_matches WHERE deal_id = " . $dealId . " AND user_id = " . $userId;
+	 echo ($sql);
+	 trigger_error($sql);
+  	 	 if ($conn->query($sql) === TRUE) {
+ 			trigger_error( "Deleted from USER_PENDING_MATCHUP successfully");
+       } else {
+			trigger_error( "Error: " . $sql . " " . $conn->error);
+	    }
+}
+
 function UPDATE_USER_PENDING_MATCHES($matchId, $noOfUsersMatched, $matchStatus, $dealId, $userId, $userId1, $userId2) {
     
     global $conn;
@@ -82,6 +114,15 @@ function UPDATE_USER_PENDING_MATCHES($matchId, $noOfUsersMatched, $matchStatus, 
     }	
  }
 
+
+
+
+
+
+
+/************************SUCCESS_MATCHES QUERIES*************************/
+
+
 function INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId1, $userId2, $userId3, $matchStatus) {
 	
 	 global $conn;
@@ -101,19 +142,5 @@ function INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId1, $u
 	 return $conn->insert_id;
 }
 
-function DELETE_USER_PENDING_MATCHES($userId, $dealId) { 
-	
-	 global $conn;
-	 
-	 
-	 $sql = "DELETE FROM user_pending_matches WHERE deal_id = " . $dealId . " AND user_id = " . $userId;
-	 echo ($sql);
-	 trigger_error($sql);
-  	 	 if ($conn->query($sql) === TRUE) {
- 			trigger_error( "Intested into SUCCESS_MATCHUP successfully");
-       } else {
-			trigger_error( "Error: " . $sql . " " . $conn->error);
-	    }
-}
 
 ?>
