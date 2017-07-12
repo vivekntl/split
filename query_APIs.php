@@ -16,10 +16,10 @@ function INSERT_WORKING_MATCHES($dealId, $interests) {
 
 function UPDATE_WORKING_MATCHES($dealId, $interests) {
 		
-	 global $conn;
-	 
-    $sql = "UPDATE working_matches set interests = " . $interests . " WHERE deal_id = " . $dealId;
+    global $conn;
     
+    $sql = "UPDATE working_matches set interests = " . $interests . " WHERE deal_id = " . $dealId;
+
     if ($conn->query($sql) === TRUE) {
         trigger_error( "Updated WORKING_MATCHES successfully");
     } else {
@@ -101,12 +101,12 @@ function INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId1, $u
 	 return $conn->insert_id;
 }
 
-function DELETE_USER_PENDING_MATCHES($dealId, $userId) { 
+function DELETE_USER_PENDING_MATCHES($userId, $dealId) { 
 	
 	 global $conn;
 	 
 	 
-	 $sql = "DELETE FROM user_pending_matches WHERE deal_id = " . $dealId . " AND $userId = " . $userId;
+	 $sql = "DELETE FROM user_pending_matches WHERE deal_id = " . $dealId . " AND user_id = " . $userId;
 	 echo ($sql);
 	 trigger_error($sql);
   	 	 if ($conn->query($sql) === TRUE) {

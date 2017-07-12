@@ -8,7 +8,7 @@
 
 include('constants.php');
 include('query_APIs.php');
-//include('db_connect.php');
+include('db_connect.php');
 include('new_matchup.php');
 include('modify_prev.php');
 
@@ -43,6 +43,6 @@ switch($request_type) {
         
 }
 
-//include('db_close');
+include('db_close.php');
  
 ?>
