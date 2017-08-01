@@ -191,7 +191,7 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
 
                 echo "<br>No ofuser matched" . $noOfUsersMatched . "<br>";
                 if($noOfUsersMatched == 1) {
-                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], NULL, 'MATCHED', $userContribution, $userInterestArray[0]);					
+                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], NULL, 'MATCHED', $userContribution, $userInterestArray[0], NULL);					
                 } else {
                     $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], $usersMatched[1], 'MATCHED', $userContribution, $userInterestArray[0], $userInterestArray[1]);	
                 }
