@@ -53,7 +53,7 @@ function UPDATE_WORKING_MATCHES($dealId, $interests) {
 
 
 
-/***********************USER_PENDING__MATCHES QUERIES***************************/
+/***********************USER_PENDING_MATCHES QUERIES****************************/
 
 
 function INSERT_USER_PENDING_MATCHES ($dealId, $userId, $matchId, $userContribution, $matchStatus, $noOfUsersMatched, $userId1, $userId2) {
@@ -123,14 +123,14 @@ function UPDATE_USER_PENDING_MATCHES($matchId, $noOfUsersMatched, $matchStatus, 
 /************************SUCCESS_MATCHES QUERIES*************************/
 
 
-function INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId1, $userId2, $userId3, $matchStatus) {
+function INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId1, $userId2, $userId3, $matchStatus, $userUnits1, $userUnits2, $userUnits3) {
 	
 	 global $conn;
 	 
 	 if($noOfUsersMatched == 1) {
-	 	$sql = "INSERT INTO success_matchups (deal_id, code, num_matches, user1_id, user2_id, matchup_status) VALUES (" . $dealId .  "," . "'" . $code . "'" . "," . "2" . "," . $userId1 .  "," . $userId2 . ",'" . $matchStatus . "')"; 						
+	 	$sql = "INSERT INTO success_matchups (deal_id, code, num_matches, user1_id, user2_id, matchup_status, user1_units, user2_units) VALUES (" . $dealId .  "," . "'" . $code . "'" . "," . "2" . "," . $userId1 .  "," . $userId2 . ",'" . $matchStatus . "'," . $userUnits1 . ","  . $userUnits2 . ")"; 						
 	 } else {
-	 	$sql = "INSERT INTO success_matchups (deal_id, code, num_matches, user1_id, user2_id, user3_id, matchup_status) VALUES (" . $dealId .  "," . "'" . $code . "'" . "," . "3" . "," . $userId1 .  "," . $userId2 . "," .$userId3 . ",'" . $matchStatus . "')"; 						
+	 	$sql = "INSERT INTO success_matchups (deal_id, code, num_matches, user1_id, user2_id, user3_id, matchup_status, user1_units, user2_units, user3_units) VALUES (" . $dealId .  "," . "'" . $code . "'" . "," . "3" . "," . $userId1 .  "," . $userId2 . "," .$userId3 . ",'" . $matchStatus . "'," . $userUnits1 . ","  . $userUnits2 . "," . $userUnits3 .   ")"; 						
 	 }
 	 echo ($sql);
 	 trigger_error($sql);

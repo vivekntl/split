@@ -29,8 +29,8 @@ function check_for_match($userContribution, $userArray, $userInterestArray, $dea
 
     $row = $result->fetch_assoc();	
 
-    $X_array = array($row['X1'], $row['X2'], $row['X3']);		
-    $Y_array = array($row['Y1'], $row['Y2'], $row['Y3']);
+    $X_array = array($row['X1'], $row['X2'] == 0 ? 9999999 : $row['X2'], $row['X3'] == 0 ? 9999999 : $row['X3']);		
+    $Y_array = array($row['Y1'], $row['Y2'] == 0 ? 9999999 : $row['Y2'], $row['Y3'] == 0 ? 9999999 : $row['Y3']);
     $dealType = $row['type_id'];
 
     rsort($X_array);		
@@ -162,21 +162,21 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
 
             } else {
 
-                     $flagAdd = 1;
-                     $interests = "";
-
-                     for($i=0; $i<count($userArray); $i++) { 
-                        for($j=0; $j<count($usersMatched); $j++) {
-                            echo "<br>Matching " . $i . " and " . $j;				 		
-                            if($userArray[$i] == $usersMatched[$j]) {
-                                $flagAdd = 0;
-                                break;		
-                            }
-                        }       
-                        if($flagAdd == 1) {
-                            $interests = $interests . "{" . $userArray[$i] . "," . $userInterestArray[$i] . "};";
-                        }
-                        $flagAdd = 1;        
+	               $flagAdd = 1;
+	               $interests = "";
+	
+	               for($i=0; $i<count($userArray); $i++) { 
+	                  for($j=0; $j<count($usersMatched); $j++) {
+	                      echo "<br>Matching " . $i . " and " . $j;				 		
+	                      if($userArray[$i] == $usersMatched[$j]) {
+	                          $flagAdd = 0;
+	                          break;		
+	                      }
+	                  }       
+	                  if($flagAdd == 1) {
+	                      $interests = $interests . "{" . $userArray[$i] . "," . $userInterestArray[$i] . "};";
+	                  }
+	                  $flagAdd = 1;        
                 }
 
                 trigger_error($interests . " " . strlen($interests));
@@ -191,9 +191,9 @@ function handle_new_matchup_request($userId, $dealId, $userContribution) {
 
                 echo "<br>No ofuser matched" . $noOfUsersMatched . "<br>";
                 if($noOfUsersMatched == 1) {
-                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], NULL, 'MATCHED');					
+                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], NULL, 'MATCHED', $userContribution, $userInterestArray[0]);					
                 } else {
-                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], $usersMatched[1], 'MATCHED');	
+                    $prevId = INSERT_SUCCESS_MATCHUPS($dealId, $code, $noOfUsersMatched, $userId, $usersMatched[0], $usersMatched[1], 'MATCHED', $userContribution, $userInterestArray[0], $userInterestArray[1]);	
                 }
 
                 if($noOfUsersMatched == 1) {
